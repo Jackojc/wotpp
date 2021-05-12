@@ -147,6 +147,31 @@ if get_option('disable_repl')
 	add_project_arguments('-DWPP_DISABLE_REPL', language: 'cpp')
 endif
 
+
+# Overflow detection
+if get_option('enable_overflow_detector')
+	enable_detector = true
+
+	if host_machine.cpu_family() != 'x86_64' and host_machine.cpu_family() != 'aarch64'
+		warning('Overflow detector does not support this architecture')
+		enable_detector = false
+	endif
+
+	if not meson.get_compiler('cpp').has_function('sigaltstack', prefix: '#include <signal.h>')
+		warning('Overflow detector requires sigaltstack')
+		enable_detector = false
+	endif
+
+	if enable_detector
+		add_project_arguments('-DWPP_ENABLE_OVERFLOW_DETECTOR', language: 'cpp')
+		sources += files(
+			'src/misc/overflow_detect.cpp',
+			'src/misc/overflow_detect.hpp'
+		)
+	endif
+endif
+
+
 exe = executable(
 	'w++',
 	sources,

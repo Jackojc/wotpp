@@ -13,8 +13,14 @@
 #include <backend/eval/eval.hpp>
 #include <frontend/parser/parser.hpp>
 
+#ifdef WPP_ENABLE_OVERFLOW_DETECTOR
+#include <misc/overflow_detect.hpp>
+#endif
 
 int main(int argc, const char* argv[]) {
+#ifdef WPP_ENABLE_OVERFLOW_DETECTOR
+	WPP_OVERFLOW_DETECTOR_INIT;
+#endif
 	constexpr auto ver = "alpha-git";
 	constexpr auto desc = "A small macro language for producing and manipulating strings.";
 
